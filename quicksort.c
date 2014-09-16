@@ -20,120 +20,123 @@
             and greater than the pivot, and then call itself 
             on the lowest array followed by calling itself
             on the highest.
+
+        To Do:
+            Should parse and sort float data
+            Parsing should be done with strtof
+            should malloc and realloc arrays as needed
+            
 */
 
-include 
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 
+struct timespec difftimes(struct timespec start, struct timespec end)
+{
+  struct timespec temp;
+  if ((end.tv_nsec-start.tv_nsec)<0) {
+    temp.tv_sec = end.tv_sec-start.tv_sec-1;
+    temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+  } else {
+    temp.tv_sec = end.tv_sec-start.tv_sec;
+    temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+  }
+  return temp;
+}
 
+int pivot(int first, int last){
+  //printf("\npivot %i %i\n",last,first);
+  int middle = first + (last-first)/2;
+  if(first < middle){
+    if(first >= last)
+      return first;
+    else if(first < last)
+      return last;
+  }
+  else{
+    if(first < last)
+      return first;
+    else if(middle >= last)
+      return middle;
+  }
+}
+
+int* quicksort(int * unsorted, int unsorted_length){
+  int i=0,l=0,m=0,r=0;
+  size_t size = sizeof(int);
+  int * sorted = calloc(unsorted_length,size);//trusting unsorted_length to be right.
+  int * left = calloc(unsorted_length,size);//trusting unsorted_length to be right.
+  int * right = calloc(unsorted_length,size);//trusting unsorted_length to be right.
+  //printf("\nquick %i %i\n",unsorted[0],unsorted[unsorted_length-1]);
+  int p = pivot(unsorted[0],unsorted[unsorted_length-1]);
+  int c = 0; //iterators: forloop,left,middle,right,current value
+  for(;i<unsorted_length;i++){
+    c = unsorted[i]; //avoid reading into unsorted three times per loop.
+    if(c<p){
+      left[l]=c;
+      l++;
+    }
+    else if(c>p){
+      right[r]=c;
+      r++;
+    }
+    else{//c==pivot
+      m++;
+    }
+
+  }//ends for loop
+  if(l>0)
+    left = quicksort(left,l);
+  if(r>0)
+    right = quicksort(right,r);
+
+  for(i=0;i<l;){
+    sorted[i]=left[i];
+    i++;
+  }
+  for(i=l;i<l+m;){
+    sorted[i]=p;
+    i++;
+  }
+  for(i=l+m;i<unsorted_length;i++)
+    sorted[i]=right[i-(l+m)];
+  free(sorted);
+  free(left);
+  free(right);
+return sorted;
+}
 
 int main(void) {
-    int random = malloc(sizeof(int));
-    int random_length = 1;
-    int sorted = malloc(sizeof(int));
-    int random_length = 1;
-    float time;
-    FILE *file;
-    char letter;
-//load file
-    file - fopen("data.txt", "r");//data should be a single line of 
-//read file into array
-    while (EOF != fscanf(file, "%i",letter)){
-        random_length++;
-        realloc(random,sizeof(int)*(random_length));
-        random[random_lenght] = letter
-    }
-    fclose(file);
-//time in
-    
-//call quicksort
-    sorted = quicksort(random,random_length);//needs to pass a pointer, not an array
-//time out
-//print result
-    printf("Results:\n");
-    for(i=0;i < sizeof(sorted);){
-        for(j=0;j<5;j++){
-            printf(" %i,",sorted[i]);
-            i++;
-        }
-        printf("\n");
-    }
-    printf("Ran for: %f seconds.\n",time);
+  int ul = 1000;//maximum number of entries to sort.
+  int* u = malloc(ul*sizeof(int));//unsorted
+  int* s = malloc(ul*sizeof(int));//sorted
+  int i;
+  int c = 0;//iterators: outer loop,inner loop, current random number.
 
-    free(random);
-    free(sorted);
-    return 0;
-}
+  struct timespec start; // time keeping
+  struct timespec end; // time keeping
+  struct timespec res;
 
-
-int[] quicksort(int unsorted int unsorted_length){//needs a pointer to return
-    int less = malloc(sizeof(int));
-    int less_length = 1;
-    int more = malloc(sizeof(int));
-    int more_length = 1;
-    int equal = malloc(sizeof(int));
-    int equal=length = 1;
-    int sorted = malloc(sizeof(int));
-    int sorted_length = 1;
-    int sorted_less = malloc(sizeof(int));
-    int 
-    int sorted_more = malloc(sizeof(int));
-    int center;
-    int sorted_size;
-    int c;
-    p = pivot(unsorted[0],unsorted[unsorted_length - 1]);
-    center = unsorted[p];
-    for(i=0; i < unsorted_length; i++){
-        if(unsorted[i] > center){
-            less_length++;
-            realloc(less,sizeof(int)*less_length);
-            less[less_length] = unsorted[i];
-        }
-        else if(unsorted[i] == center){
-            equal_length++;
-            realloc(equal,sizeof(int)*equal_length);
-            equal[equal_length] = unsorted[i];
-            e++;
-        }else {
-            more_length++;
-            realloc(more,sizeof(int)*more_length);
-            more[more_length] = unsorted[i];
-        }
-    }
-    sorted_less = quicksort(less, less_length);//should pass pointer, not array 
-    sorted_more = quicksort(more, more_length);
-
-    for(i=0;i < sizeof(sorted_less);i++){
-        sorted[i]=sorted_less[i];
-        c=i;
-    }
-    for(i=c; i < (sizeof(equal)+c);i++){
-        sorted(i) = equal[i-c];
-    }
-    for(i=0;i < sizeof(sorted_more);i++){
-        sorted[c+i]=sorted_more[i];
-    }
-    sorted_size = sizeof(sorted)
-
-    free(less);
-    free(more);
-    free(equal);
-    free(sorted);
-    free(sorted_more);
-    free(sorted_less);
-return sorted_size;
-}
-
-int pivot(int first int last){
-    int middle = first + (last-first)/2;
-    if(first < middle){
-        if(first >= last)
-            return first;
-        else if(first < last)
-            return last;
-    }
-    else{
-        if(first < last)
-            return first;
-        else if(middle >= last)
-            return middle;
+  srand(time(NULL));
+  for(i=0;i<ul;i++){
+    u[i]=rand()%100;
+    printf(" %i",u[i]);
+    if(i%80==0)
+      printf("\n");
+  }
+  printf("\n %i %i %i\n",ul,u[0],u[ul-1]);
+  clock_gettime(CLOCK_REALTIME,&start);
+  s = quicksort(u,ul);
+  clock_gettime(CLOCK_REALTIME,&end);
+  res = difftimes(start,end);
+  printf("quicksort ran for %lld.%.9ld seconds\n", (long long)res.tv_sec, res.tv_nsec);
+  for(i=0;i<ul;i++){
+    printf(" %i",s[i]);
+    if(i%80==0)
+      printf("\n");
+  }
+  free(u);
+  free(s);
+  return 0;
 }
