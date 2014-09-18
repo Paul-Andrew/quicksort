@@ -49,66 +49,64 @@ int pivot(int first, int last){
   //printf("\npivot %i %i\n",last,first);
   int middle = first + (last-first)/2;
   if(first < middle){
-    if(first >= last)
+    if(first > last)
       return first;
-    else if(first < last)
-      return last;
+    return last;
   }
   else{
     if(first < last)
       return first;
-    else if(middle >= last)
+    else if(middle > last)
       return middle;
+    return last;
   }
 }
 
-int* quicksort(int * unsorted, int unsorted_length){
-  int i=0,l=0,m=0,r=0;
-  size_t size = sizeof(int);
-  int * sorted = calloc(unsorted_length,size);//trusting unsorted_length to be right.
-  int * left = calloc(unsorted_length,size);//trusting unsorted_length to be right.
-  int * right = calloc(unsorted_length,size);//trusting unsorted_length to be right.
+void quicksort(int * u, int ul){
+  int i=0,ll=0,ml=0,rl=0;
+  size_t size = sizeof(@u);
+  int * l = calloc(ul,size);//trusting unsorted_length to be correct.
+  int * r = calloc(ul,size);//trusting unsorted_length to be correct.
   //printf("\nquick %i %i\n",unsorted[0],unsorted[unsorted_length-1]);
-  int p = pivot(unsorted[0],unsorted[unsorted_length-1]);
-  int c = 0; //iterators: forloop,left,middle,right,current value
-  for(;i<unsorted_length;i++){
-    c = unsorted[i]; //avoid reading into unsorted three times per loop.
+  int p = pivot(*u,*u+ul-1]);
+  int c = 0; //current value
+  for(;i<ul;i++){
+    c = *u+i; //avoid reading into unsorted three times per loop.
     if(c<p){
-      left[l]=c;
-      l++;
+      l[ll]=c;
+      ll++;
     }
     else if(c>p){
-      right[r]=c;
-      r++;
+      r[rl]=c;
+      rl++;
     }
     else{//c==pivot
-      m++;
+      ml++;
     }
 
   }//ends for loop
-  if(l>0)
-    left = quicksort(left,l);
-  if(r>0)
-    right = quicksort(right,r);
+  if(ll>0)
+    quicksort(&l,ll);
+  if(rl>0)
+    quicksort(&r,rl);
 
   for(i=0;i<l;){
-    sorted[i]=left[i];
+    *u+i=*l+i;
     i++;
   }
   for(i=l;i<l+m;){
-    sorted[i]=p;
+    *u+i=p;
     i++;
   }
-  for(i=l+m;i<unsorted_length;i++)
-    sorted[i]=right[i-(l+m)];
-  free(sorted);
-  free(left);
-  free(right);
-return sorted;
+  for(i=ll+ml;i<ul;i++)
+    *u+i=*r+i-(ll+ml);
+  free(l);
+  free(r);
 }
 
 int main(void) {
   int ul = 1000;//maximum number of entries to sort.
+  int sl = ul;
   int* u = malloc(ul*sizeof(int));//unsorted
   int* s = malloc(ul*sizeof(int));//sorted
   int i;
@@ -121,15 +119,18 @@ int main(void) {
   srand(time(NULL));
   for(i=0;i<ul;i++){
     u[i]=rand()%100;
+    s[i]=u[i];
     printf(" %i",u[i]);
     if(i%80==0)
       printf("\n");
   }
+  
   printf("\n %i %i %i\n",ul,u[0],u[ul-1]);
   clock_gettime(CLOCK_REALTIME,&start);
-  s = quicksort(u,ul);
+    quicksort(&s,ul);
   clock_gettime(CLOCK_REALTIME,&end);
   res = difftimes(start,end);
+  
   printf("quicksort ran for %lld.%.9ld seconds\n", (long long)res.tv_sec, res.tv_nsec);
   for(i=0;i<ul;i++){
     printf(" %i",s[i]);
