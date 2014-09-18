@@ -64,14 +64,14 @@ int pivot(int first, int last){
 
 void quicksort(int * u, int ul){
   int i=0,ll=0,ml=0,rl=0;
-  size_t size = sizeof(@u);
+  size_t size = sizeof(u);
   int * l = calloc(ul,size);//trusting unsorted_length to be correct.
   int * r = calloc(ul,size);//trusting unsorted_length to be correct.
   //printf("\nquick %i %i\n",unsorted[0],unsorted[unsorted_length-1]);
-  int p = pivot(*u,*u+ul-1]);
+  int p = pivot(u[0],u[ul-1]);
   int c = 0; //current value
   for(;i<ul;i++){
-    c = *u+i; //avoid reading into unsorted three times per loop.
+    c = u[i]; //avoid reading into unsorted three times per loop.
     if(c<p){
       l[ll]=c;
       ll++;
@@ -86,26 +86,26 @@ void quicksort(int * u, int ul){
 
   }//ends for loop
   if(ll>0)
-    quicksort(&l,ll);
+    quicksort(l,ll);
   if(rl>0)
-    quicksort(&r,rl);
+    quicksort(r,rl);
 
-  for(i=0;i<l;){
-    *u+i=*l+i;
+  for(i=0;i<ll;){
+    u[i] = l[i];
     i++;
   }
-  for(i=l;i<l+m;){
-    *u+i=p;
+  for(i=ll;i<ll+ml;){
+    u[i] = p;
     i++;
   }
   for(i=ll+ml;i<ul;i++)
-    *u+i=*r+i-(ll+ml);
+    u[i] = r[i-ll-ml];
   free(l);
   free(r);
 }
 
 int main(void) {
-  int ul = 1000;//maximum number of entries to sort.
+  int ul = 10000;//maximum number of entries to sort.
   int sl = ul;
   int* u = malloc(ul*sizeof(int));//unsorted
   int* s = malloc(ul*sizeof(int));//sorted
@@ -118,25 +118,26 @@ int main(void) {
 
   srand(time(NULL));
   for(i=0;i<ul;i++){
-    u[i]=rand()%100;
+    u[i]=(rand()%60000)-30000;
     s[i]=u[i];
     printf(" %i",u[i]);
-    if(i%80==0)
-      printf("\n");
+    //if(i%100==99)
+      //printf("\n");
   }
-  
+
   printf("\n %i %i %i\n",ul,u[0],u[ul-1]);
   clock_gettime(CLOCK_REALTIME,&start);
-    quicksort(&s,ul);
+    quicksort(s,ul);
   clock_gettime(CLOCK_REALTIME,&end);
   res = difftimes(start,end);
-  
+
   printf("quicksort ran for %lld.%.9ld seconds\n", (long long)res.tv_sec, res.tv_nsec);
   for(i=0;i<ul;i++){
     printf(" %i",s[i]);
-    if(i%80==0)
-      printf("\n");
+    //if(i%100==99)
+      //printf("\n");
   }
+  printf("\n");
   free(u);
   free(s);
   return 0;
